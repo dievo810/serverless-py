@@ -1,0 +1,5 @@
+# which version of python
+FROM python:3.11-slim
+
+# run the app
+CMD ["python", "-m", "http.server"]
