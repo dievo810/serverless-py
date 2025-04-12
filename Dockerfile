@@ -6,7 +6,13 @@ WORKDIR /app/
 
 # Install necessary system packages
 RUN apt-get update && \
-    apt-get install -y python3-venv build-essential python3-dev python3-setuptools gcc make
+    apt-get install -y \
+    python3-venv \
+    build-essential \
+    python3-dev \
+    python3-setuptools \
+    gcc \
+    make
 
 # Copy only requirements first for better caching
 COPY src/requirements.txt /app/src/requirements.txt
