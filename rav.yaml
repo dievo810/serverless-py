@@ -5,8 +5,16 @@ scripts:
   empty-run: docker run -p 8001:8000 -it empty-py
   
   build: docker build -f Dockerfile -t serverless-py .
-  run: docker run -p 8000:8000 --rm --name serverless-py -it serverless-py
+  run: docker run --env-file .env -p 8000:8000 --rm --name serverless-py -it serverless-py
   build_run:
     - rav run build
     - rav run run
-  push: docker push
+  configure:
+    - gcloud auth configure-docker us-central1-docker.pkg.dev
+    - gcloud artifacts repositories create serverless-py-repo --repository-format=docker --location=us-central1
+  push: 
+    - docker build -f Dockerfile -t serverless-py-amd64 .
+    - docker tag serverless-py-amd64 us-central1-docker.pkg.dev/serverless-py-442222/serverless-py-repo/serverless-py:latest
+    - docker push us-central1-docker.pkg.dev/serverless-py-442222/serverless-py-repo/serverless-py --all-tags
+  deploy:
+    - gcloud run deploy serverless-py-run --image=us-central1-docker.pkg.dev/serverless-py-442222/serverless-py-repo/serverless-py:latest --allow-unauthenticated --region=us-central1 --project=serverless-py-442222 
